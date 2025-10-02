@@ -28,3 +28,65 @@ module adder3(input logic [2:0] A, B,
     fulladder u2 (A[2], B[2], c2, s[2], c3);
 endmodule
 
+// D-latch code:
+module D_latch(input logic D, clk
+               output logic Q);
+    always_latch begin
+        if (clk == 1)
+            Q = D;
+    end
+endmodule
+
+// FFs
+module D_FF(input logic D, clk,
+            output logic Q);
+    always_ff @ (posedge clk) //Sensitivity test, use negedge for negatively triggered FF
+        Q <= D; //Assignment operator for FF
+
+endmodule
+
+/*
+posedge is a keyword used to create FFs
+- Any signal assigned a vlaue inside an always block using posedge becomes Q output of FF
+
+When code describes FFs, the assignments should use <= (non-blocking) instead of = (blocking)
+
+Note: 
+- Q can only store value of D
+- positive clk edge vs latch above with "if clk == 1":
+    - Q1 <= D1;
+    - Q2 <= Q1;
+*/
+
+// Register
+module reg8(input logic [7:0] D,
+            input logic clk,
+            output logic [7:0] Q);
+    always_ff @ (posedge clk)
+        Q <= D;
+
+endmodule
+
+//Reset
+module D_FF(input logic D, clk, resetn
+            output logic Q);
+    always_ff @ (posedge clk) 
+    begin
+        if (resetn == 0) //active low reset
+            Q <= 1'b0;
+        else
+            Q <= D; 
+    end
+endmodule
+
+//Asynchronous
+module D_FF(input logic D, clk, resetn
+            output logic Q);
+    always_ff @ (posedge clk, negedge resetn) 
+    begin
+        if (resetn == 0)
+            Q <= 1'b0;
+        else
+            Q <= D; 
+    end
+endmodule
